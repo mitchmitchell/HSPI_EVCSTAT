@@ -1,0 +1,3 @@
+xxxx,[CHECKVERSION],3.0.0.13
+HSPI_RCSSERIAL.exe,.,0
+Help.htm,.\html\RCSSerial,0

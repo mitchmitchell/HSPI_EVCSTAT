@@ -1,0 +1,29 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+HSPI_RCSSERIAL
+</name>
+</assembly>
+<members>
+<member name="T:HSPI_RCSSERIAL.HSPI">
+	<summary>
+ The main class that HomeSeer will make function calls on
+ </summary>
+	<remarks></remarks>
+</member><member name="P:HSPI_RCSSERIAL.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:HSPI_RCSSERIAL.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="T:HSPI_RCSSERIAL.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+</members>
+</doc>
