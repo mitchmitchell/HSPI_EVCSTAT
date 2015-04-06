@@ -44,7 +44,7 @@ Public Class HSPI
     End Function
 
     Public Function AccessLevel() As Integer
-        AccessLevel = 1
+        AccessLevel = 0
     End Function
 
     Public Function SupportsConfigDevice() As Boolean
@@ -58,15 +58,6 @@ Public Class HSPI
     Public Function Capabilities() As Integer
         Return 4
     End Function
-
-    Public Property HSOwned As String
-        Get
-            Return "HSENC2P3KJ4Fe+MmFiUwzZuFlJVg=="
-        End Get
-        Set(value As String)
-
-        End Set
-    End Property
 
 #End Region
 
