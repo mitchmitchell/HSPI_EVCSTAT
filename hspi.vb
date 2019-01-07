@@ -10,9 +10,9 @@ Imports Scheduler
 ''' <remarks></remarks>
 <Serializable()>
 Public Class HSPI
-    Private Const sConfigPage As String = "EVCSerial_Config"
-    Private Const sHelpPage As String = "EVCSerial_Help"
-    Private ConfigPage As New EVCSerialConfig(sConfigPage)
+    Private Const sConfigPage As String = "EVCStat_Config"
+    Private Const sHelpPage As String = "EVCStat_Help"
+    Private ConfigPage As New EVCSTATConfig(sConfigPage)
     Dim actions As New hsCollection
     Dim action As New action
     Dim triggers As New hsCollection

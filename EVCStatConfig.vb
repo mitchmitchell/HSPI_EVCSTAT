@@ -5,7 +5,7 @@ Imports Scheduler
 Imports System.Data
 Imports HomeSeerAPI
 
-Public Class EVCSerialConfig
+Public Class EVCSTATConfig
     Inherits clsPageBuilder
 
     Dim i As Integer
