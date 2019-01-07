@@ -9,11 +9,11 @@
     <ProjectGuid>{B0811C24-AA58-499B-881C-21B5CB93BEDF}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <StartupObject>Sub Main</StartupObject>
-    <RootNamespace>HSPI_RCSSERIAL</RootNamespace>
-    <AssemblyName>HSPI_RCSSERIAL</AssemblyName>
+    <RootNamespace>HSPI_EVCSTAT</RootNamespace>
+    <AssemblyName>HSPI_EVCSTAT</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Console</MyType>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -24,8 +24,9 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\..\HS3\HomeSeer\HomeSeer\</OutputPath>
-    <DocumentationFile>HSPI_RCSSERIAL.xml</DocumentationFile>
+    <DocumentationFile>HSPI_EVCSTAT.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -34,8 +35,9 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>HSPI_RCSSERIAL.xml</DocumentationFile>
+    <DocumentationFile>HSPI_EVCSTAT.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -55,6 +57,10 @@
     </Reference>
     <Reference Include="HSCF">
       <HintPath>..\..\HS3\HomeSeer\HomeSeer\HSCF.dll</HintPath>
+    </Reference>
+    <Reference Include="M2Mqtt.Net, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\HS3\HomeSeer\HomeSeer\M2Mqtt.Net.dll</HintPath>
     </Reference>
     <Reference Include="Scheduler, Version=3.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -128,9 +134,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RCSSerialConfig.vb">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="EVCSTATConfig.vb" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Installer\install.txt" />

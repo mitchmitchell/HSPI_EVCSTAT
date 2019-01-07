@@ -1,7 +1,7 @@
 ﻿Imports System
 Imports Scheduler
 Imports HomeSeerAPI
-Imports DeviceAPI
+'Imports DeviceAPI
 
 Imports HSCF.Communication.Scs.Communication.EndPoints.Tcp
 Imports HSCF.Communication.ScsServices.Client
@@ -77,7 +77,7 @@ Public Class PluginAPI
 
     ' we won't need this if we get rid of IR plugins (X10 already gone)
     Public Function Capabilities() As Integer Implements HomeSeerAPI.IPlugInAPI.Capabilities
-        Return 4
+        Return HomeSeerAPI.Enums.eCapabilities.CA_IO Or Enums.eCapabilities.CA_Thermostat
     End Function
 
 
@@ -117,6 +117,7 @@ Public Class PluginAPI
         ' Normally we would do a search on plug-in actions, triggers, devices, etc. for the string provided, using
         '   the string as a regular expression if RegEx is True.
         '
+        Return Nothing
     End Function
 
     Public Sub SetIOMulti(colSend As System.Collections.Generic.List(Of HomeSeerAPI.CAPI.CAPIControl)) Implements HomeSeerAPI.IPlugInAPI.SetIOMulti
@@ -124,7 +125,7 @@ Public Class PluginAPI
     End Sub
 
     Public Sub shutdownIO() Implements HomeSeerAPI.IPlugInAPI.ShutdownIO
-        plugin.ShutdownIO()
+        HSPI.ShutdownIO()
     End Sub
 
     Public Sub HSEvent(ByVal EventType As Enums.HSEvent, ByVal parms() As Object) Implements HomeSeerAPI.IPlugInAPI.HSEvent
@@ -172,7 +173,7 @@ Public Class PluginAPI
 
     Public Function ActionReferencesDevice(ByVal ActInfo As IPlugInAPI.strTrigActInfo, ByVal dvRef As Integer) As Boolean Implements HomeSeerAPI.IPlugInAPI.ActionReferencesDevice
         Console.WriteLine("ActionReferencesDevice Called")
-
+        Return False
     End Function
 
     Public Function ActionFormatUI(ByVal ActInfo As IPlugInAPI.strTrigActInfo) As String Implements HomeSeerAPI.IPlugInAPI.ActionFormatUI
@@ -247,7 +248,7 @@ Public Class PluginAPI
     End Property
 
     Public Function TriggerReferencesDevice(ByVal TrigInfo As HomeSeerAPI.IPlugInAPI.strTrigActInfo, ByVal dvRef As Integer) As Boolean Implements HomeSeerAPI.IPlugInAPI.TriggerReferencesDevice
-
+        Return False
     End Function
 
     Public Function TriggerFormatUI(ByVal TrigInfo As HomeSeerAPI.IPlugInAPI.strTrigActInfo) As String Implements HomeSeerAPI.IPlugInAPI.TriggerFormatUI

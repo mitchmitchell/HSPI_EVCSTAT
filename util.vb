@@ -6,7 +6,7 @@ Imports Scheduler
 Imports System.Web
 
 Public Module util
-    Public Const IFACE_NAME = "RCSStat"
+    Public Const IFACE_NAME = "EVCStat"
     Public Instance As String = ""
     Public hs As IHSApplication
     Public callback As IAppCallbackAPI
@@ -33,9 +33,9 @@ Public Module util
         Delete
     End Enum
 
-    Public Function AddThermostat(ByVal Name As String, Optional ByVal RefID As Integer = 0) As Thermostat
+    Public Function AddThermostat(ByVal Name As String, ByVal Address As Integer, Optional ByVal RefID As Integer = 0) As Thermostat
         Dim oThermostat As Thermostat
-        oThermostat = New Thermostat(Name, RefID, Tempscale)
+        oThermostat = New Thermostat(Name, Address, RefID, Tempscale)
         arrThermostats.Add(CObj(oThermostat), oThermostat.RefID.ToString)
         SaveThermostats()
         Return oThermostat
@@ -198,7 +198,7 @@ Public Module util
     End Function
 
     Sub PEDAdd(ByRef PED As clsPlugExtraData, ByVal PEDName As String, ByVal PEDValue As Object)
-        Dim ByteObject() As Byte
+        Dim ByteObject() As Byte = Nothing
         If PED Is Nothing Then PED = New clsPlugExtraData
         SerializeObject(PEDValue, ByteObject)
         If Not PED.AddNamed(PEDName, ByteObject) Then

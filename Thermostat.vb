@@ -16,12 +16,12 @@ Public Class Thermostat
 #Region "Enumerations"
     Enum eDeviceValues
         'parent device values
-
         Address    'This is the default parent value
         'the rest use custom code
         Name
         Location
         Location2
+        Message
     End Enum
 
     Enum eDeviceTypes
@@ -32,6 +32,8 @@ Public Class Thermostat
         Hold
         Temperature
         Outside_Temp
+        RunTime
+        Filter_Remind
     End Enum
 
     Enum eMode As Integer
@@ -48,8 +50,9 @@ Public Class Thermostat
     End Enum
 
     Enum eHold
-        Hold
         Run
+        Hold
+        Tmp
     End Enum
 
     Enum eTempScale
@@ -64,7 +67,7 @@ Public Class Thermostat
 #End Region
 
 #Region "Object Initialization"
-    Public Sub New(ByVal DeviceName As String, Optional ByVal iRefID As Integer = 0, Optional ByVal TempScale As eTempScale = eTempScale.Fahrenheit)
+    Public Sub New(ByVal DeviceName As String, ByVal Address As Integer, Optional ByVal iRefID As Integer = 0, Optional ByVal TempScale As eTempScale = eTempScale.Fahrenheit)
         MyBase.New()
         Dim dv As Scheduler.Classes.DeviceClass = Nothing
         Dim enumValues As Array = System.[Enum].GetValues(GetType(eDeviceTypes))
@@ -75,12 +78,12 @@ Public Class Thermostat
         If iRefID > 0 Then 'the device already exists
             RefID = iRefID
         Else
-            RefID = CreateDevice(DeviceName)
+            RefID = CreateDevice(DeviceName, Address)
         End If
 
         dv = GetDevice(eParent)
 
-        dtThermostats.Rows.Add(eParent, RefID, RefID, dv.devValue(hs)) 'set the child and parent ref ID's to the same
+        dtThermostats.Rows.Add(eParent, RefID, RefID, dv.Address(hs)) 'set the child and parent ref ID's to the same
         dtThermostats.AcceptChanges()
 
         Dim PED As clsPlugExtraData = dv.PlugExtraData_Get(hs)
@@ -88,7 +91,7 @@ Public Class Thermostat
         For Each ChildDevice As eDeviceTypes In enumValues
             ChildRefID = PEDGet(PED, ChildDevice.ToString) 'get the ref for this child device from the parent data
             ChildRefID = IIf(ChildRefID = Nothing, 0, ChildRefID) 'qualify the result
-            ChildRefID = CreateDevice(ChildDevice.ToString, ChildDevice, ChildRefID) 'check for a device, if not found, create it
+            ChildRefID = CreateDevice(ChildDevice.ToString, Address, ChildDevice, ChildRefID) 'check for a device, if not found, create it
             dtThermostats.Rows.Add(ChildDevice, ChildRefID, RefID, 0) 'keep the data centrally located for multiple lookup types
             PEDAdd(PED, ChildDevice.ToString, ChildRefID) 'Keep a reference to the child ref using the enumeration for quicker retrieval.
             BindParentAndChild(dv, RefID, ChildRefID) 'in this loop the child is being bound to the parent device ('cuz we have it)
@@ -208,6 +211,31 @@ Public Class Thermostat
             SetTempScaleData(value)
         End Set
     End Property
+    Public Property Message() As String
+        Get
+            Return GetDeviceValue(eParent, eDeviceValues.Message)
+        End Get
+        Set(ByVal value As String)
+            SetDeviceValue(eParent, value, eDeviceValues.Message)
+        End Set
+    End Property
+
+    Public Property FilterRemind() As Integer
+        Get
+            Return GetDeviceValue(eDeviceTypes.Filter_Remind)
+        End Get
+        Set(ByVal value As Integer)
+            SetDeviceValue(eDeviceTypes.Filter_Remind, value)
+        End Set
+    End Property
+    Public Property TotalRunTime() As Integer
+        Get
+            Return GetDeviceValue(eDeviceTypes.RunTime)
+        End Get
+        Set(ByVal value As Integer)
+            SetDeviceValue(eDeviceTypes.RunTime, value)
+        End Set
+    End Property
 #End Region
 
 #Region "Private Subs/Functions"
@@ -316,6 +344,8 @@ Public Class Thermostat
                     Case eDeviceValues.Location2
                         dv.Location2(hs) = Value
                         UpdateChildDevices(eDeviceValues.Location2, Value)
+                    Case eDeviceValues.Message
+                        dv.AdditionalDisplayData(hs) = {Value}
                 End Select
             Case Else 'set the default value for the device
                 dv = GetDevice(DeviceType)
@@ -356,9 +386,11 @@ Public Class Thermostat
             Case eDeviceTypes.Hold
                 Select Case Value
                     Case eHold.Run
-                        Command = "SC=1"
-                    Case eHold.Hold
                         Command = "SC=0"
+                    Case eHold.Hold
+                        Command = "SC=1"
+                    Case eHold.Tmp ' dont really ever send this command out.
+                        Command = "SC=2"
                 End Select
             Case eDeviceTypes.Mode
                 Select Case Value
@@ -442,6 +474,14 @@ Public Class Thermostat
     Sub AddControl(ByVal ref As Integer, ByVal name As String, DeviceType As eDeviceTypes, ByVal value1 As Integer, Optional ByVal value2 As Integer = 0)
         Dim Pair As VSPair = Nothing
         Select Case DeviceType
+            Case eDeviceTypes.Filter_Remind
+                Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Both)
+                Pair.PairType = VSVGPairType.SingleValue
+                Pair.Value = value1
+                Pair.Status = name
+                Pair.Render_Location.Row = 1
+                Pair.Render_Location.Column = 1
+                Pair.Render = Enums.CAPIControlType.Button
             Case eDeviceTypes.Fan, eDeviceTypes.Hold, eDeviceTypes.Mode
                 Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Both)
                 Pair.PairType = VSVGPairType.SingleValue
@@ -458,18 +498,23 @@ Public Class Thermostat
                 Pair.Render_Location.Row = 1
                 Pair.Render_Location.Column = 1
                 Pair.Render = Enums.CAPIControlType.ValuesRange
-            Case eDeviceTypes.Temperature, eDeviceTypes.Outside_Temp, eParent
+            Case eDeviceTypes.Temperature, eDeviceTypes.Outside_Temp
                 Pair = New VSPair(ePairStatusControl.Status)
                 Pair.PairType = VSVGPairType.Range
                 Pair.RangeStart = value1
                 Pair.RangeEnd = value2
                 Pair.Render_Location.Row = 1
                 Pair.Render_Location.Column = 1
-                If DeviceType = eParent Then
-                    Pair.RangeStatusPrefix = "Address "
-                Else
-                    Pair.RangeStatusSuffix = "°"
-                End If
+                Pair.RangeStatusSuffix = "°"
+                Pair.Render = Enums.CAPIControlType.Values
+            Case eParent ' ToDo add support for message display
+                Pair = New VSPair(ePairStatusControl.Status)
+                Pair.PairType = VSVGPairType.Range
+                Pair.RangeStart = value1
+                Pair.RangeEnd = value2
+                Pair.Render_Location.Row = 1
+                Pair.Render_Location.Column = 1
+                Pair.RangeStatusPrefix = "Address "
                 Pair.Render = Enums.CAPIControlType.Values
         End Select
         hs.DeviceVSP_AddPair(ref, Pair)
@@ -485,7 +530,24 @@ Public Class Thermostat
         hs.DeviceVGP_ClearAll(dv.Ref(hs), True)
     End Sub
 
-    Private Function CreateDevice(ByVal DeviceName As String, Optional ChildDeviceType As eDeviceTypes = -1, Optional iRefID As Integer = 0) As Integer
+    '    Public Enum eDeviceType_Thermostat
+    '        Operating_State = 1
+    '        Temperature = 2
+    '        Mode_Set = 3
+    '        Fan_Mode_Set = 4
+    '        Fan_Status = 5
+    '        Setpoint = 6
+    '        RunTime = 7
+    '        Hold_Mode = 8
+    '        Operating_Mode = 9
+    '        Additional_Temperature = 10
+    '        Setback = 11
+    '        Filter_Remind = 12
+    '        Root = 99
+    '   End Enum
+
+
+    Private Function CreateDevice(ByVal DeviceName As String, ByVal Address As Integer, Optional ChildDeviceType As eDeviceTypes = -1, Optional iRefID As Integer = 0) As Integer
         Dim dv As Scheduler.Classes.DeviceClass = Nothing
         Dim ref As Integer
         Dim PED As clsPlugExtraData
@@ -505,7 +567,7 @@ Public Class Thermostat
             dv.Can_Dim(hs) = False
             dv.Device_Type_String(hs) = DeviceName
             Dim DT As New DeviceTypeInfo
-            DT.Device_Type = DeviceTypeInfo.eDeviceAPI.Thermostat
+            DT.Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
             dv.DeviceType_Set(hs) = DT
             dv.Interface(hs) = IFACE_NAME
             dv.InterfaceInstance(hs) = ""
@@ -523,38 +585,84 @@ Public Class Thermostat
             Select Case ChildDeviceType
                 Case eDeviceTypes.Heat_SetPoint
                     dv.Can_Dim(hs) = True
+                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
+                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
                     AddControl(ref, "Heat Point", ChildDeviceType, SetPoint_Low, SetPoint_High)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Setpoint
+                    DT.Device_SubType = DeviceTypeInfo.eDeviceSubType_Setpoint.Heating_1
+                    dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Cool_SetPoint
                     dv.Can_Dim(hs) = True
+                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
+                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
                     AddControl(ref, "Cool Point", ChildDeviceType, SetPoint_Low, SetPoint_High)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Setpoint
+                    DT.Device_SubType = DeviceTypeInfo.eDeviceSubType_Setpoint.Cooling_1
+                    dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Mode
+                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
+                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
                     AddControl(ref, "Auto", ChildDeviceType, eMode.Auto)
                     AddControl(ref, "Aux", ChildDeviceType, eMode.Aux)
                     AddControl(ref, "Cool", ChildDeviceType, eMode.Cool)
                     AddControl(ref, "Heat", ChildDeviceType, eMode.Heat)
                     AddControl(ref, "Off", ChildDeviceType, eMode.Off)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Operating_Mode
+                    dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Fan
+                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
+                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
                     AddControl(ref, "Auto", ChildDeviceType, eFan.Auto)
                     AddControl(ref, "On", ChildDeviceType, eFan.FanOn)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Fan_Status
+                    dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Hold
+                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
+                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
                     AddControl(ref, "Hold", ChildDeviceType, eHold.Hold)
                     AddControl(ref, "Run", ChildDeviceType, eHold.Run)
+                    AddControl(ref, "Tmp", ChildDeviceType, eHold.Tmp)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Hold_Mode
+                    dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Temperature
+                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
+                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
                     SetUpStatusOnly(dv)
                     AddControl(ref, "Temp", ChildDeviceType, Temp_Low, Temp_High)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Temperature
+                    DT.Device_SubType = DeviceTypeInfo.eDeviceSubType_Temperature.Temperature
+                    dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Outside_Temp
+                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
+                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
                     SetUpStatusOnly(dv)
                     AddControl(ref, "Outside Temp", ChildDeviceType, Temp_Low, Temp_High)
-                Case Else 'parent
-                    SetUpStatusOnly(dv)
-
-                    AddControl(ref, DeviceName, eParent, eAddress.Low, eAddress.High)
-
-                    dv.Device_Type_String(hs) = "RCS - Parent"
-                    dv.Address(hs) = "RCS - Parent"
-                    DT.Device_Type = DeviceTypeInfo.eDeviceType_GenericRoot
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Temperature
+                    DT.Device_SubType = DeviceTypeInfo.eDeviceSubType_Temperature.Other_Temperature
                     dv.DeviceType_Set(hs) = DT
-
+                Case eDeviceTypes.RunTime
+                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
+                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    SetUpStatusOnly(dv)
+                    AddControl(ref, "Run Time", ChildDeviceType, 0, 2147483647)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.RunTime
+                    dv.DeviceType_Set(hs) = DT
+                Case eDeviceTypes.Filter_Remind
+                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
+                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    'SetUpStatusOnly(dv)
+                    AddControl(ref, "Reset", ChildDeviceType, True)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Filter_Remind
+                    dv.DeviceType_Set(hs) = DT
+                Case Else 'parent
+                    dv.ImageLarge(hs) = "images/EVC-TStat/thermostat-large.jpg"
+                    dv.Image(hs) = "images/EVC-TStat/thermostat-large_small.jpg"
+                    SetUpStatusOnly(dv)
+                    AddControl(ref, DeviceName, eParent, eAddress.Low, eAddress.High)
+                    dv.Device_Type_String(hs) = "EVC Thermostats"
+                    dv.Address(hs) = Address
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Root
+                    dv.DeviceType_Set(hs) = DT
                     RefID = ref
             End Select
 
@@ -579,9 +687,8 @@ Public Class Thermostat
         Try
             Log("In Poll: Time: " & Now(), LogLevel.Debug)
             Try
-                SendCMD("R=1") ' This gets Temp and Mode data
-                SendCMD("R=2") ' This gets Operating Data
-                SendCMD("SC=?") ' This gets Hold mode
+                Dim cmd As String = "A=" & Me.Address.ToString & " O=00 R=1 R=2 SC=?" & vbCr
+                SendCMD(cmd)
             Catch ex As Exception
                 Log("Error in Poll: " & ex.Message, LogLevel.Normal)
             End Try
@@ -633,6 +740,12 @@ Public Class Thermostat
                                 Case "1"
                                     Me.Fan = eFan.FanOn
                             End Select
+                        Case "FR"
+                            'Remaining Filter Time
+                            Me.FilterRemind = Value
+                        Case "FT"
+                            'Total Filter Time
+                            Me.TotalRunTime = Value
                         Case "SPH"
                             'HeatSet
                             Me.HeatSetPoint = Value
@@ -641,20 +754,24 @@ Public Class Thermostat
                             Me.CoolSetPoint = Value
                         Case "T"
                             Me.Temperature = Value
+                        Case "TM"
+                            Me.Message = Value
                         Case "OA"
                             Me.OutsideTemp = Value
                         Case "SC"
                             Select Case Value
                                 Case "0"
-                                    Me.Hold = eHold.Hold
-                                Case "1"
                                     Me.Hold = eHold.Run
+                                Case "1"
+                                    Me.Hold = eHold.Hold
+                                Case "2"
+                                    Me.Hold = eHold.Tmp
                             End Select
                         Case Else
                             CheckTriggers(addr, zone, Prop, Value)
                     End Select
                 Catch ex As Exception
-                    Log("Error in ProcessCMD, Selecting Properties, " & ex.Message)
+                    Log("Error in ProcessCMD Select Block, Selecting Properties, " & ex.Message)
                 End Try
             Next
         Catch ex As Exception

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+HSPI_EVCSTAT
+</name>
+</assembly>
+<members>
+<member name="T:HSPI_EVCSTAT.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:HSPI_EVCSTAT.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:HSPI_EVCSTAT.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
+<member name="T:HSPI_EVCSTAT.HSPI">
+ <summary>
+ The main class that HomeSeer will make function calls on
+ </summary>
+ <remarks></remarks>
+</member>
+</members>
+</doc>

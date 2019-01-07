@@ -8,11 +8,11 @@ Imports Scheduler
 ''' The main class that HomeSeer will make function calls on
 ''' </summary>
 ''' <remarks></remarks>
-<Serializable()> _
+<Serializable()>
 Public Class HSPI
-    Private Const sConfigPage As String = "RCSSerial_Config"
-    Private Const sHelpPage As String = "RCSSerial_Help"
-    Private ConfigPage As New RCSSerialConfig(sConfigPage)
+    Private Const sConfigPage As String = "EVCSerial_Config"
+    Private Const sHelpPage As String = "EVCSerial_Help"
+    Private ConfigPage As New EVCSerialConfig(sConfigPage)
     Dim actions As New hsCollection
     Dim action As New action
     Dim triggers As New hsCollection
@@ -44,7 +44,7 @@ Public Class HSPI
     End Function
 
     Public Function AccessLevel() As Integer
-        AccessLevel = 0
+        AccessLevel = 1
     End Function
 
     Public Function SupportsConfigDevice() As Boolean
@@ -52,11 +52,11 @@ Public Class HSPI
     End Function
 
     Public Function HSCOMPort() As Boolean
-        Return True
+        Return False
     End Function
 
     Public Function Capabilities() As Integer
-        Return 4
+        Return HomeSeerAPI.Enums.eCapabilities.CA_IO Or Enums.eCapabilities.CA_Thermostat
     End Function
 
 #End Region
@@ -64,11 +64,11 @@ Public Class HSPI
 #Region "Device Interface"
 
     Public Function ConfigDevice(ref As Integer, user As String, userRights As Integer, newDevice As Boolean) As String
-
+        Return True
     End Function
 
     Public Function ConfigDevicePost(ref As Integer, data As String, user As String, userRights As Integer) As Enums.ConfigDevicePostReturn
-
+        Return True
     End Function
 
     Public Sub SetIOMulti(colSend As System.Collections.Generic.List(Of HomeSeerAPI.CAPI.CAPIControl))
@@ -278,7 +278,7 @@ Public Class HSPI
             Next
 
             CommandString = "A=" & Address & " O=" & Zone & " " & Command & "=" & Value & vbCr
-            
+
             ComThread.SendCommand(CommandString)
 
         Catch ex As Exception
@@ -359,7 +359,7 @@ Public Class HSPI
         Return stb.ToString
     End Function
 
-    Public Function ActionProcessPostUI(ByVal PostData As Collections.Specialized.NameValueCollection, _
+    Public Function ActionProcessPostUI(ByVal PostData As Collections.Specialized.NameValueCollection,
                                         ByVal ActInfo As IPlugInAPI.strTrigActInfo) As IPlugInAPI.strMultiReturn
 
         Dim Ret As New HomeSeerAPI.IPlugInAPI.strMultiReturn
@@ -441,7 +441,7 @@ Public Class HSPI
         CommandString = "A=" & Address & " O=" & Zone & " " & Command & "=" & Value
 
         stb.Append(" send the command string: " & CommandString)
-        
+
 
         Return stb.ToString
     End Function
@@ -523,7 +523,7 @@ Public Class HSPI
         Return stb.ToString
     End Function
 
-    Public Function TriggerProcessPostUI(ByVal PostData As System.Collections.Specialized.NameValueCollection, _
+    Public Function TriggerProcessPostUI(ByVal PostData As System.Collections.Specialized.NameValueCollection,
                                                      ByVal TrigInfo As HomeSeerAPI.IPlugInAPI.strTrigActInfo) As HomeSeerAPI.IPlugInAPI.strMultiReturn
         Dim Ret As New HomeSeerAPI.IPlugInAPI.strMultiReturn
         Dim UID As String
@@ -618,6 +618,7 @@ Public Class HSPI
         Dim RefID As String
         Dim TempScaleF As Boolean
 
+        Console.WriteLine("InitIO starting.")
         BuildThermostatDataTable() 'initialize the data table
 
         TempScaleF = CBool(hs.GetINISetting("Settings", "GlobalTempScaleF", "True").Trim) 'get temp scale from HS
@@ -629,16 +630,24 @@ Public Class HSPI
             For Each RefID In RefIDs
                 dv = hs.GetDeviceByRef(CInt(RefID))
                 If Not dv Is Nothing Then
-                    AddThermostat(dv.Name(hs), dv.Ref(hs))
+                    AddThermostat(dv.Name(hs), dv.Address(hs), dv.Ref(hs))
+                    Log("A thermostat for device " & RefID & " was found in the list of devices:" & dv.Name(hs), LogLevel.Debug)
+                    Console.WriteLine("A thermostat for device " & RefID & " was found in the list of devices:" & dv.Name(hs))
+                Else
+                    Log("A thermostat for device " & RefID & " was NOT found in the list of devices.", LogLevel.Err)
+                    Console.WriteLine("A thermostat for device " & RefID & " was NOT found in the list of devices.")
                 End If
             Next
+        Else
+            Log("No thermostat devices were found in the Plug-in INI file.", LogLevel.Err)
+            Console.WriteLine("No thermostat devices were found in the Plug-in INI file.")
         End If
 
         RegisterWebPage(sConfigPage)
         RegisterWebPage(sHelpPage, "Help")
 
         callback.RegisterEventCB(Enums.HSEvent.CONFIG_CHANGE, Me.Name, Me.InstanceFriendlyName)
-        callback.RegisterEventCB(Enums.HSEvent.SETUP_CHANGE, Me.name, Me.InstanceFriendlyName)
+        callback.RegisterEventCB(Enums.HSEvent.SETUP_CHANGE, Me.Name, Me.InstanceFriendlyName)
 
         BaudRate = hs.GetINISetting("Settings", "BaudRate", "9600", INI_File)
         gDebug = hs.GetINISetting("Settings", "Debug", False, INI_File)
@@ -646,7 +655,8 @@ Public Class HSPI
 
         ComThread.Start(port, CInt(BaudRate))
         ComThread.SetPolling(CInt(Interval))
-
+        Console.WriteLine("InitIO completeing.")
+        Return Nothing
     End Function
 
     Public Shared Sub ShutdownIO()

@@ -1,33 +1,40 @@
 ﻿Imports System.IO
+Imports System.Net
+Imports System.Text
 Imports System.Threading
+Imports uPLibrary.Networking.M2Mqtt
+Imports uPLibrary.Networking.M2Mqtt.Messages
 Imports VB = Microsoft.VisualBasic
 
 Public Class CommThread
     Dim PollTimer As New System.Timers.Timer
-    Dim WithEvents rs232 As Ports.SerialPort
     Public Shared TransmitQ As New Queue
     Dim RThread As Thread
     Public Port As String
     Public BaudRate As Integer
     Public PollInterval As Integer
     Dim iRetries As Integer = 0
+    Dim client As MqttClient
 
     Public Sub New()
         MyBase.New()
         AddHandler PollTimer.Elapsed, AddressOf PollTimer_Tick
     End Sub
+    Public Sub client_MqttMsgPublishReceived(sender As Object, e As MqttMsgPublishEventArgs)
+        Dim st As String = ByteArrayToString(e.Message)
+        Log("message received: " & st, LogLevel.Debug)
+        ProcessResponse(st)
+    End Sub
+
 
     Public Function Start(Optional ByVal sPort As String = "", Optional ByVal iBaudRate As Integer = -1) As Boolean
-        If sPort <> "" Then Port = sPort
-        If iBaudRate > 0 Then BaudRate = iBaudRate
+
         Try
-            rs232 = New Ports.SerialPort(Port, BaudRate, Ports.Parity.None, 8, Ports.StopBits.One)
-            rs232.Open()
-            rs232.ReceivedBytesThreshold = 1
-            rs232.RtsEnable = True
-            rs232.DtrEnable = True
-            rs232.Handshake = Ports.Handshake.None
-            rs232.DiscardNull = False
+            client = New MqttClient("192.168.1.11")
+            'register to message received
+            AddHandler client.MqttMsgPublishReceived, AddressOf client_MqttMsgPublishReceived
+            client.Connect("EVC Thermostat")
+            client.Subscribe({"magnoliamanor/homeseer/evc/in"}, {MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE})
 
             RThread = New Threading.Thread(AddressOf Comm)
             RThread.Start()
@@ -37,7 +44,7 @@ Public Class CommThread
             Log("Error in COM Thread Start: " & ex.Message)
             If iRetries < 5 Then
                 iRetries += 1
-                Start()
+                Return Start()
             Else
                 Log("Abandoning COM Thread Start: " & ex.Message)
                 Return False
@@ -47,7 +54,6 @@ Public Class CommThread
 
     Public Sub Halt()
         RThread.Abort()
-        rs232.Close()
     End Sub
 
     Public Sub Restart()
@@ -69,11 +75,7 @@ Public Class CommThread
 
     Private Sub Comm()
         ' init ports here so all work is done in this thread
-10:     Dim buf() As Byte
 20:     Dim st As String = ""
-30:     Dim stlen As String
-40:     Dim Count As Integer
-50:     Dim response As String
 60:     Dim RetCnt As Integer
         Dim bNewData As Boolean = False
 70:
@@ -88,7 +90,7 @@ Public Class CommThread
 170:                    Try
 180:                        Dim tqi As TransmitQitem = TransmitQ.Dequeue
 190:                        Log("Writing Data: " & ByteArrayToString(tqi.Buf), LogLevel.Debug)
-200:                        rs232.Write(tqi.Buf, 0, tqi.Count)
+200:                        client.Publish("magnoliamanor/homeseer/evc/out", tqi.Buf) 'rs232.Write(tqi.Buf, 0, tqi.Count)
 210:                        Thread.Sleep(250)
 220:                    Catch ex As Exception
 230:                        Log("Error Writing Data: " & ex.Message)
@@ -96,37 +98,7 @@ Public Class CommThread
 250:                Loop While TransmitQ.Count > 0
 260:            End If
 270:
-280:            Do
-290:                Count = rs232.BytesToRead
-300:                If Count > 0 Then
-310:                    ReDim buf(Count - 1)
-320:                    rs232.Read(buf, 0, Count)
-330:                    st = st & ByteArrayToString(buf)
-                        bNewData = True
-340:                End If
-350:            Loop While rs232.BytesToRead > 0
-360:
-370:            If bNewData Then
-380:                If InStr(st, vbCr) Then
-                        Log("Recieving Data: " & Left(st, st.Length - 1), LogLevel.Debug)
-                    Else
-                        Log("Recieving Data: " & st, LogLevel.Debug)
-                    End If
-                    bNewData = False
-390:            End If
-400:
-410:            If InStr(st, vbCr) Then
-420:                Do
-430:                    ' handle processing of COM data here
-440:                    stlen = InStr(st, vbCr)
-450:                    response = Strings.Left(st, stlen - 1)
-460:                    ProcessResponse(response)
-470:                    st = st.Remove(0, stlen)
-480:
-490:                Loop While InStr(st, vbCr)
-500:            End If
-510:
-520:            RetCnt = 0
+
 530:
 540:        Catch ex As Exception
 550:            Log("Error in Poll Thread, " & ex.Message & " Line Number:" & Err.Erl)
@@ -174,7 +146,7 @@ Public Class CommThread
                     Log("Return dataline: " & text, LogLevel.Err)
                 End If
             End If
-140:       
+140:
 190:    Catch ex As Exception
 200:        Log("Error in ProcessResponse, " & ex.Message & " Line Number:" & Err.Erl, LogLevel.Err)
             Log("Error in ProcessResponse, return dataline: " & text, LogLevel.Err)
@@ -198,5 +170,4 @@ Public Class CommThread
             oThermostat.Poll()
         Next
     End Sub
-
 End Class

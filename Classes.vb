@@ -79,7 +79,7 @@ Public Module Classes
         End Sub
     End Class
 
-    <Serializable()> _
+    <Serializable()>
     Public Class trigger
         Inherits hsCollection
         Public IsCondition As Boolean = False

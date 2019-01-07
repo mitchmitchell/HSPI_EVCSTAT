@@ -5,7 +5,7 @@ Imports Scheduler
 Imports System.Data
 Imports HomeSeerAPI
 
-Public Class RCSSerialConfig
+Public Class EVCSerialConfig
     Inherits clsPageBuilder
 
     Dim i As Integer
@@ -65,7 +65,7 @@ Public Class RCSSerialConfig
             Dim parts As Collections.Specialized.NameValueCollection = Nothing
 
             ' add the normal title
-            Me.AddHeader(hs.GetPageHeader(pageName, "RCS Serial Configuration", "", "", False, False))
+            Me.AddHeader(hs.GetPageHeader(pageName, "EVC Serial Configuration", "", "", False, False))
 
             stb.Append(clsPageBuilder.DivStart("pluginpage", ""))
             ' a message area for error messages from jquery ajax postback (optional, only needed if using AJAX calls to get data)
@@ -142,10 +142,10 @@ Public Class RCSSerialConfig
     End Sub
 
 
-    Function BuildStatList() As pair()
+    Function BuildStatList() As Pair()
         Dim Thermostat As Thermostat
         Dim i As Integer = 0
-        Dim DataPairs() As pair = Nothing
+        Dim DataPairs() As Pair = Nothing
         For Each Thermostat In arrThermostats.Values
             ReDim Preserve DataPairs(i)
             DataPairs(i).Name = Thermostat.Name
@@ -198,7 +198,7 @@ Public Class RCSSerialConfig
 
             If parts("TextBoxNew") = "" Then Exit Sub
 
-            stat = AddThermostat(parts("TextBoxNew"))
+            stat = AddThermostat(parts("TextBoxNew"), parts("DropDownListNewStatID"))
             stat.Address = parts("DropDownListNewStatID")
             stat.Location = parts("TextBoxLocation")
             stat.Location2 = parts("TextBoxLocation2")
@@ -256,7 +256,7 @@ Public Class RCSSerialConfig
             stb.Append(" <tr>")
             stb.Append("  <td></td>")
             stb.Append("  <td align='right'>")
-            stb.Append("   <a href='RCS%20Help%20File\RCSSerial-Help.htm'>Help Page</a>")
+            stb.Append("   <a href='EVC%20Help%20File\EVCSerial-Help.htm'>Help Page</a>")
             stb.Append("  </td>")
             stb.Append(" </tr>")
             stb.Append(" <tr>")
