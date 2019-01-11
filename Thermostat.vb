@@ -338,6 +338,7 @@ Public Class Thermostat
                         PED = dv.PlugExtraData_Get(hs)
                         PEDAdd(PED, "Parent", Value)
                         dv.PlugExtraData_Set(hs) = PED
+                        dv.Address(hs) = Value
                     Case eDeviceValues.Location
                         dv.Location(hs) = Value
                         UpdateChildDevices(eDeviceValues.Location, Value)
@@ -376,6 +377,8 @@ Public Class Thermostat
                 Command = "SPH=" & CStr(Value)
             Case eDeviceTypes.Cool_SetPoint
                 Command = "SPC=" & CStr(Value)
+            Case eDeviceTypes.Filter_Remind
+                Command = "FR=" & CStr(Value)
             Case eDeviceTypes.Fan
                 Select Case Value
                     Case eFan.Auto
@@ -585,23 +588,23 @@ Public Class Thermostat
             Select Case ChildDeviceType
                 Case eDeviceTypes.Heat_SetPoint
                     dv.Can_Dim(hs) = True
-                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
-                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     AddControl(ref, "Heat Point", ChildDeviceType, SetPoint_Low, SetPoint_High)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Setpoint
                     DT.Device_SubType = DeviceTypeInfo.eDeviceSubType_Setpoint.Heating_1
                     dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Cool_SetPoint
                     dv.Can_Dim(hs) = True
-                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
-                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     AddControl(ref, "Cool Point", ChildDeviceType, SetPoint_Low, SetPoint_High)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Setpoint
                     DT.Device_SubType = DeviceTypeInfo.eDeviceSubType_Setpoint.Cooling_1
                     dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Mode
-                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
-                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     AddControl(ref, "Auto", ChildDeviceType, eMode.Auto)
                     AddControl(ref, "Aux", ChildDeviceType, eMode.Aux)
                     AddControl(ref, "Cool", ChildDeviceType, eMode.Cool)
@@ -610,53 +613,53 @@ Public Class Thermostat
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Operating_Mode
                     dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Fan
-                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
-                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     AddControl(ref, "Auto", ChildDeviceType, eFan.Auto)
                     AddControl(ref, "On", ChildDeviceType, eFan.FanOn)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Fan_Status
                     dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Hold
-                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
-                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     AddControl(ref, "Hold", ChildDeviceType, eHold.Hold)
                     AddControl(ref, "Run", ChildDeviceType, eHold.Run)
                     AddControl(ref, "Tmp", ChildDeviceType, eHold.Tmp)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Hold_Mode
                     dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Temperature
-                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
-                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     SetUpStatusOnly(dv)
                     AddControl(ref, "Temp", ChildDeviceType, Temp_Low, Temp_High)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Temperature
                     DT.Device_SubType = DeviceTypeInfo.eDeviceSubType_Temperature.Temperature
                     dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Outside_Temp
-                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
-                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     SetUpStatusOnly(dv)
                     AddControl(ref, "Outside Temp", ChildDeviceType, Temp_Low, Temp_High)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Temperature
                     DT.Device_SubType = DeviceTypeInfo.eDeviceSubType_Temperature.Other_Temperature
                     dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.RunTime
-                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
-                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     SetUpStatusOnly(dv)
                     AddControl(ref, "Run Time", ChildDeviceType, 0, 2147483647)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.RunTime
                     dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Filter_Remind
-                    dv.ImageLarge(hs) = "images/EVC-TStat/VStat.png"
-                    dv.Image(hs) = "images/EVC-TStat/VStat_small.png"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     'SetUpStatusOnly(dv)
                     AddControl(ref, "Reset", ChildDeviceType, True)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Filter_Remind
                     dv.DeviceType_Set(hs) = DT
                 Case Else 'parent
-                    dv.ImageLarge(hs) = "images/EVC-TStat/thermostat-large.jpg"
-                    dv.Image(hs) = "images/EVC-TStat/thermostat-large_small.jpg"
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-main.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-main_small.png"
                     SetUpStatusOnly(dv)
                     AddControl(ref, DeviceName, eParent, eAddress.Low, eAddress.High)
                     dv.Device_Type_String(hs) = "EVC Thermostats"

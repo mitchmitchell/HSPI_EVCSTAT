@@ -13,6 +13,9 @@ Public Class CommThread
     Public Port As String
     Public BaudRate As Integer
     Public PollInterval As Integer
+    Public MQTT_RecvTopic As String = "homeseer/evc/in"
+    Public MQTT_SendTopic As String = "homeseer/evc/out"
+    Public MQTT_HostAddr As String = "127.0.0.1"
     Dim iRetries As Integer = 0
     Dim client As MqttClient
 
@@ -30,11 +33,11 @@ Public Class CommThread
     Public Function Start(Optional ByVal sPort As String = "", Optional ByVal iBaudRate As Integer = -1) As Boolean
 
         Try
-            client = New MqttClient("192.168.1.11")
+            client = New MqttClient(MQTT_HostAddr)
             'register to message received
             AddHandler client.MqttMsgPublishReceived, AddressOf client_MqttMsgPublishReceived
             client.Connect("EVC Thermostat")
-            client.Subscribe({"magnoliamanor/homeseer/evc/in"}, {MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE})
+            client.Subscribe({MQTT_RecvTopic}, {MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE})
 
             RThread = New Threading.Thread(AddressOf Comm)
             RThread.Start()
@@ -90,7 +93,7 @@ Public Class CommThread
 170:                    Try
 180:                        Dim tqi As TransmitQitem = TransmitQ.Dequeue
 190:                        Log("Writing Data: " & ByteArrayToString(tqi.Buf), LogLevel.Debug)
-200:                        client.Publish("magnoliamanor/homeseer/evc/out", tqi.Buf) 'rs232.Write(tqi.Buf, 0, tqi.Count)
+200:                        client.Publish(MQTT_SendTopic, tqi.Buf) 'rs232.Write(tqi.Buf, 0, tqi.Count)
 210:                        Thread.Sleep(250)
 220:                    Catch ex As Exception
 230:                        Log("Error Writing Data: " & ex.Message)
@@ -170,4 +173,17 @@ Public Class CommThread
             oThermostat.Poll()
         Next
     End Sub
+
+    Public Sub SetSendTopic(Optional ByVal Topic As String = "homeseer/evc/out")
+        MQTT_SendTopic = Topic
+    End Sub
+
+    Public Sub SetRecvTopic(Optional ByVal Topic As String = "homeseer/evc/in")
+        MQTT_RecvTopic = Topic
+    End Sub
+
+    Public Sub SetMQTTHost(Optional ByVal Addr As String = "127.0.0.1")
+        MQTT_HostAddr = Addr
+    End Sub
+
 End Class

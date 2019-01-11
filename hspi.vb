@@ -81,24 +81,26 @@ Public Class HSPI
         Dim RefID As Integer
         Try
             For Each CC In colSend
-10:             dv = hs.GetDeviceByRef(CC.Ref) 'get the device
-20:             RefIDs = dv.AssociatedDevices(hs) 'get the parent ref
-30:             RefID = RefIDs(0) 'first(and only) one in the list
-40:             oStat = arrThermostats(RefID.ToString) ' use the parent ref to get the right thermostat
-50:             PED = dv.PlugExtraData_Get(hs) 'the device type is referenced inside the PED
-60:             DeviceType = PEDGet(PED, CC.Ref.ToString)
+                dv = hs.GetDeviceByRef(CC.Ref) 'get the device
+                RefIDs = dv.AssociatedDevices(hs) 'get the parent ref
+                RefID = RefIDs(0) 'first(and only) one in the list
+                oStat = arrThermostats(RefID.ToString) ' use the parent ref to get the right thermostat
+                PED = dv.PlugExtraData_Get(hs) 'the device type is referenced inside the PED
+                DeviceType = PEDGet(PED, CC.Ref.ToString)
 
-70:             Select Case DeviceType
+                Select Case DeviceType
                     Case Thermostat.eDeviceTypes.Heat_SetPoint
-80:                     oStat.HeatSetPoint = CC.ControlValue
+                        oStat.HeatSetPoint = CC.ControlValue
                     Case Thermostat.eDeviceTypes.Cool_SetPoint
-90:                     oStat.CoolSetPoint = CC.ControlValue
+                        oStat.CoolSetPoint = CC.ControlValue
                     Case Thermostat.eDeviceTypes.Fan
-100:                    oStat.Fan = CC.ControlValue
+                        oStat.Fan = CC.ControlValue
                     Case Thermostat.eDeviceTypes.Hold
-110:                    oStat.Hold = CC.ControlValue
+                        oStat.Hold = CC.ControlValue
                     Case Thermostat.eDeviceTypes.Mode
-120:                    oStat.Mode = CC.ControlValue
+                        oStat.Mode = CC.ControlValue
+                    Case Thermostat.eDeviceTypes.Filter_Remind
+                        oStat.FilterRemind = CC.ControlValue
                 End Select
                 oStat.UpdatePhysicalDevice(DeviceType, CC.ControlValue) 'do this here to prevent the physical device from getting caught in a loop updating itself.
             Next
@@ -166,7 +168,7 @@ Public Class HSPI
 
 #End Region
 
-#Region "Trigger Proerties"
+#Region "Trigger Properties"
 
     Sub SetTriggers()
         Dim o As Object = Nothing
@@ -617,6 +619,9 @@ Public Class HSPI
         Dim RefIDs() As String
         Dim RefID As String
         Dim TempScaleF As Boolean
+        Dim MQTT_HostAddr As String = "127.0.0.1"
+        Dim MQTT_SendTopic As String = "homeseer/evc/out"
+        Dim MQTT_RecvTopic As String = "homeseer/evc/in"
 
         Console.WriteLine("InitIO starting.")
         BuildThermostatDataTable() 'initialize the data table
@@ -652,6 +657,13 @@ Public Class HSPI
         BaudRate = hs.GetINISetting("Settings", "BaudRate", "9600", INI_File)
         gDebug = hs.GetINISetting("Settings", "Debug", False, INI_File)
         Interval = hs.GetINISetting("Settings", "PollInterval", "0", INI_File)
+        MQTT_HostAddr = hs.GetINISetting("Settings", "MQTTHost", "127.0.0.1", INI_File)
+        MQTT_SendTopic = hs.GetINISetting("Settings", "MQTTSend", "homeseer/evc/out", INI_File)
+        MQTT_RecvTopic = hs.GetINISetting("Settings", "MQTTRecv", "homeseer/evc/in", INI_File)
+
+        ComThread.SetMQTTHost(MQTT_HostAddr)
+        ComThread.SetSendTopic(MQTT_SendTopic)
+        ComThread.SetRecvTopic(MQTT_RecvTopic)
 
         ComThread.Start(port, CInt(BaudRate))
         ComThread.SetPolling(CInt(Interval))

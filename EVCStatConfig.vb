@@ -65,7 +65,7 @@ Public Class EVCSTATConfig
             Dim parts As Collections.Specialized.NameValueCollection = Nothing
 
             ' add the normal title
-            Me.AddHeader(hs.GetPageHeader(pageName, "EVC Serial Configuration", "", "", False, False))
+            Me.AddHeader(hs.GetPageHeader(pageName, "EVC MQTTT Configuration", "", "", False, False))
 
             stb.Append(clsPageBuilder.DivStart("pluginpage", ""))
             ' a message area for error messages from jquery ajax postback (optional, only needed if using AJAX calls to get data)
@@ -124,6 +124,12 @@ Public Class EVCSTATConfig
                 Select Case True
                     Case InStr(sKey, "TextBoxPoll") > 0
                         ComThread.SetPolling(CInt(parts(sKey)))
+                    Case InStr(sKey, "TextBoxSend") > 0
+                        ComThread.SetSendTopic(CStr(parts(sKey)))
+                    Case InStr(sKey, "TextBoxRecv") > 0
+                        ComThread.SetRecvTopic(CStr(parts(sKey)))
+                    Case InStr(sKey, "TextBoxHost") > 0
+                        ComThread.SetMQTTHost(CStr(parts(sKey)))
                     Case InStr(sKey, "DropDownList") > 0
                         BaudRate = CInt(DDText("DropDownList", parts(sKey)))
                         If ComThread.BaudRate <> BaudRate Then
@@ -272,12 +278,23 @@ Public Class EVCSTATConfig
             stb.Append("     <td style='background-color: #f5f5f5;'> seconds</td>")
             stb.Append("    </tr>")
             stb.Append("    <tr>")
-            stb.Append("     <td style='width: 394px; background-color: #f5f5f5; height: 19px;'><strong>Enable Debug Messages</strong></td>")
-            stb.Append("     <td style='background-color: #f5f5f5; height: 19px;' colspan='2'>" & BuildCheckBox("CheckBoxDebug") & "</td>")
+            stb.Append("     <td style='width: 394px; background-color: #f5f5f5;'><strong>MQTTT Host Address </strong></td>")
+            stb.Append("     <td style='background-color: #f5f5f5;' width='100'>" & BuildTextBox("TextBoxHost") & "</td>")
+            stb.Append("     <td style='background-color: #f5f5f5;'></td>")
             stb.Append("    </tr>")
             stb.Append("    <tr>")
-            stb.Append("     <td style='background-color: #f5f5f5; text-align: left'><strong>Baud Rate</strong></td>")
-            stb.Append("     <td style='background-color: #f5f5f5; text-align: left' colspan='2'>" & BuildDropList("DropDownList") & "</td>")
+            stb.Append("     <td style='width: 394px; background-color: #f5f5f5;'><strong>MQTTT Send Topic </strong></td>")
+            stb.Append("     <td style='background-color: #f5f5f5;' width='100'>" & BuildTextBox("TextBoxSend") & "</td>")
+            stb.Append("     <td style='background-color: #f5f5f5;'></td>")
+            stb.Append("    </tr>")
+            stb.Append("    <tr>")
+            stb.Append("     <td style='width: 394px; background-color: #f5f5f5;'><strong>MQTTT Receive Topic </strong></td>")
+            stb.Append("     <td style='background-color: #f5f5f5;' width='100'>" & BuildTextBox("TextBoxRecv") & "</td>")
+            stb.Append("     <td style='background-color: #f5f5f5;'></td>")
+            stb.Append("    </tr>")
+            stb.Append("    <tr>")
+            stb.Append("     <td style='width: 394px; background-color: #f5f5f5; height: 19px;'><strong>Enable Debug Messages</strong></td>")
+            stb.Append("     <td style='background-color: #f5f5f5; height: 19px;' colspan='2'>" & BuildCheckBox("CheckBoxDebug") & "</td>")
             stb.Append("    </tr>")
             stb.Append("    <tr>")
             stb.Append("     <td colspan='3' style='background-color: #f5f5f5; text-align: center'><br>" & BuildButton("ButSave") & "<br></td>")
@@ -446,6 +463,12 @@ Public Class EVCSTATConfig
         Select Case Name
             Case "TextBoxPoll"
                 Text = ComThread.PollInterval.ToString
+            Case "TextBoxSend"
+                Text = ComThread.MQTT_SendTopic
+            Case "TextBoxRecv"
+                Text = ComThread.MQTT_RecvTopic
+            Case "TextBoxHost"
+                Text = ComThread.MQTT_HostAddr
         End Select
         If Text <> "" Then
             If colObjectValues.ContainsKey(Name) Then

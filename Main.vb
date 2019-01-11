@@ -24,7 +24,7 @@ Module Main
 
 
     Sub Main()
-        Dim sIp As String = "192.168.1.11"
+        Dim sIp As String = "127.0.0.1"
         Dim argv As System.Collections.ObjectModel.ReadOnlyCollection(Of String)
         argv = My.Application.CommandLineArgs
 

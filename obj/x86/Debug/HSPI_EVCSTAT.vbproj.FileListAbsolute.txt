@@ -9,3 +9,4 @@ C:\Users\Mitch.MAGNOLIAMANOR\source\repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTA
 C:\Users\Mitch.MAGNOLIAMANOR\source\repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.exe
 C:\Users\Mitch.MAGNOLIAMANOR\source\repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.xml
 C:\Users\Mitch.MAGNOLIAMANOR\source\repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.pdb
+C:\Users\Mitch.MAGNOLIAMANOR\source\repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbprojResolveAssemblyReference.cache

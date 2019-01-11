@@ -92,6 +92,9 @@ Public Module util
         Dim sKey As String
         Dim parts As Collections.Specialized.NameValueCollection
         Dim Interval As Integer = 0
+        Dim MQTT_HostAddr As String = "127.0.0.1"
+        Dim MQTT_SendTopic As String = "homeseer/evc/out"
+        Dim MQTT_RecvTopic As String = "homeseer/evc/in"
         Dim Debug As Boolean = False
         Dim BaudRate As Integer = 0
 
@@ -104,6 +107,12 @@ Public Module util
             Select Case True
                 Case InStr(sKey, "TextBoxPoll") > 0
                     Interval = CInt(parts(sKey))
+                Case InStr(sKey, "TextBoxHost") > 0
+                    MQTT_HostAddr = CStr(parts(sKey))
+                Case InStr(sKey, "TextBoxSend") > 0
+                    MQTT_SendTopic = CStr(parts(sKey))
+                Case InStr(sKey, "TextBoxRecv") > 0
+                    MQTT_RecvTopic = CStr(parts(sKey))
                 Case InStr(sKey, "DropDownList") > 0
                     BaudRate = CInt(DDText("DropDownList", parts(sKey)))
                 Case InStr(sKey, "CheckBoxDebug") > 0
@@ -112,6 +121,9 @@ Public Module util
         Next
         hs.SaveINISetting("Settings", "PollInterval", Interval, INI_File)
         hs.SaveINISetting("Settings", "BaudRate", BaudRate, INI_File)
+        hs.SaveINISetting("Settings", "MQTTHost", MQTT_HostAddr, INI_File)
+        hs.SaveINISetting("Settings", "MQTTSend", MQTT_SendTopic, INI_File)
+        hs.SaveINISetting("Settings", "MQTTRecv", MQTT_RecvTopic, INI_File)
         hs.SaveINISetting("Settings", "Debug", Debug, INI_File)
     End Sub
 
