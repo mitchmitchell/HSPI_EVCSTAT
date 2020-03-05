@@ -11,6 +11,7 @@ Public Class Thermostat
     Dim Temp_Low As Integer
     Dim Temp_High As Integer
     Dim iTempScale As Integer
+    Dim bDamperStatus As Boolean
 #End Region
 
 #Region "Enumerations"
@@ -34,6 +35,12 @@ Public Class Thermostat
         Outside_Temp
         RunTime
         Filter_Remind
+        Damper_Status
+    End Enum
+
+    Enum eDamper As Integer
+        Closed = False
+        Open = True
     End Enum
 
     Enum eMode As Integer
@@ -181,6 +188,14 @@ Public Class Thermostat
         End Get
         Set(ByVal value As Integer)
             SetDeviceValue(eDeviceTypes.Hold, value)
+        End Set
+    End Property
+    Public Property Damper() As Integer
+        Get
+            Return GetDeviceValue(eDeviceTypes.Damper_Status)
+        End Get
+        Set(ByVal value As Integer)
+            SetDeviceValue(eDeviceTypes.Damper_Status, value)
         End Set
     End Property
 
@@ -339,6 +354,7 @@ Public Class Thermostat
                         PEDAdd(PED, "Parent", Value)
                         dv.PlugExtraData_Set(hs) = PED
                         dv.Address(hs) = Value
+                        hs.SetDeviceValueByRef(ref, Value, True)
                     Case eDeviceValues.Location
                         dv.Location(hs) = Value
                         UpdateChildDevices(eDeviceValues.Location, Value)
@@ -478,6 +494,44 @@ Public Class Thermostat
         Dim Pair As VSPair = Nothing
         Select Case DeviceType
             Case eDeviceTypes.Filter_Remind
+                If (value2 = 0) Then
+                    Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Control)
+                    Pair.PairType = VSVGPairType.SingleValue
+                    Pair.Value = value1
+                    Pair.Status = name
+                    Pair.Render_Location.Row = 1
+                    Pair.Render_Location.Column = 1
+                    Pair.Render = Enums.CAPIControlType.Button
+                Else
+                    Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Status)
+                    Pair.PairType = VSVGPairType.Range
+                    Pair.RangeStart = value1
+                    Pair.RangeEnd = value2
+                    Pair.Status = name
+                    Pair.Render_Location.Row = 1
+                    Pair.Render_Location.Column = 1
+                    Pair.RangeStatusSuffix = " Days"
+                    Pair.Render = Enums.CAPIControlType.ValuesRange
+                End If
+            Case eDeviceTypes.RunTime
+                Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Status)
+                Pair.PairType = VSVGPairType.Range
+                Pair.RangeStart = value1
+                Pair.RangeEnd = value2
+                Pair.Status = name
+                Pair.Render_Location.Row = 1
+                Pair.Render_Location.Column = 1
+                Pair.RangeStatusSuffix = " Days"
+                Pair.Render = Enums.CAPIControlType.ValuesRange
+            Case eDeviceTypes.Damper_Status
+                Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Status)
+                Pair.PairType = VSVGPairType.SingleValue
+                Pair.Value = value1
+                Pair.Status = name
+                Pair.Render_Location.Row = 1
+                Pair.Render_Location.Column = 1
+                Pair.Render = Enums.CAPIControlType.Values
+            Case eDeviceTypes.Fan
                 Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Both)
                 Pair.PairType = VSVGPairType.SingleValue
                 Pair.Value = value1
@@ -485,7 +539,13 @@ Public Class Thermostat
                 Pair.Render_Location.Row = 1
                 Pair.Render_Location.Column = 1
                 Pair.Render = Enums.CAPIControlType.Button
-            Case eDeviceTypes.Fan, eDeviceTypes.Hold, eDeviceTypes.Mode
+                Select Case value1
+                    Case eFan.Auto
+                        Pair.ControlUse = ePairControlUse._ThermFanAuto
+                    Case eFan.FanOn
+                        Pair.ControlUse = ePairControlUse._ThermFanOn
+                End Select
+            Case eDeviceTypes.Hold
                 Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Both)
                 Pair.PairType = VSVGPairType.SingleValue
                 Pair.Value = value1
@@ -493,7 +553,27 @@ Public Class Thermostat
                 Pair.Render_Location.Row = 1
                 Pair.Render_Location.Column = 1
                 Pair.Render = Enums.CAPIControlType.Button
-            Case eDeviceTypes.Cool_SetPoint, eDeviceTypes.Heat_SetPoint
+            Case eDeviceTypes.Mode
+                Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Both)
+                Pair.PairType = VSVGPairType.SingleValue
+                Pair.Value = value1
+                Pair.Status = name
+                Pair.Render_Location.Row = 1
+                Pair.Render_Location.Column = 1
+                Pair.Render = Enums.CAPIControlType.Button
+                Select Case value1
+                    Case eMode.Auto
+                        Pair.ControlUse = ePairControlUse._ThermModeAuto
+                    Case eMode.Cool
+                        Pair.ControlUse = ePairControlUse._ThermModeCool
+                    Case eMode.Heat
+                        Pair.ControlUse = ePairControlUse._ThermModeHeat
+                    Case eMode.Off
+                        Pair.ControlUse = ePairControlUse._ThermModeOff
+                        'Case eMode.Aux
+                        'Pair.ControlUse = ePairControlUse._ThermModeAux
+                End Select
+            Case eDeviceTypes.Cool_SetPoint
                 Pair = New VSPair(ePairStatusControl.Both)
                 Pair.PairType = VSVGPairType.Range
                 Pair.RangeStart = value1
@@ -501,6 +581,18 @@ Public Class Thermostat
                 Pair.Render_Location.Row = 1
                 Pair.Render_Location.Column = 1
                 Pair.Render = Enums.CAPIControlType.ValuesRange
+                Pair.ControlUse = ePairControlUse._CoolSetPoint
+                Pair.RangeStatusSuffix = "°"
+            Case eDeviceTypes.Heat_SetPoint
+                Pair = New VSPair(ePairStatusControl.Both)
+                Pair.PairType = VSVGPairType.Range
+                Pair.RangeStart = value1
+                Pair.RangeEnd = value2
+                Pair.Render_Location.Row = 1
+                Pair.Render_Location.Column = 1
+                Pair.Render = Enums.CAPIControlType.ValuesRange
+                Pair.ControlUse = ePairControlUse._HeatSetPoint
+                Pair.RangeStatusSuffix = "°"
             Case eDeviceTypes.Temperature, eDeviceTypes.Outside_Temp
                 Pair = New VSPair(ePairStatusControl.Status)
                 Pair.PairType = VSVGPairType.Range
@@ -619,6 +711,13 @@ Public Class Thermostat
                     AddControl(ref, "On", ChildDeviceType, eFan.FanOn)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Fan_Status
                     dv.DeviceType_Set(hs) = DT
+                Case eDeviceTypes.Damper_Status
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
+                    AddControl(ref, "Closed", ChildDeviceType, False)
+                    AddControl(ref, "Open", ChildDeviceType, True)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Operating_State
+                    dv.DeviceType_Set(hs) = DT
                 Case eDeviceTypes.Hold
                     dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
                     dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
@@ -654,7 +753,8 @@ Public Class Thermostat
                     dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
                     dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
                     'SetUpStatusOnly(dv)
-                    AddControl(ref, "Reset", ChildDeviceType, True)
+                    AddControl(ref, "Filter Time", ChildDeviceType, 0, 2147483647)
+                    AddControl(ref, "Reset", ChildDeviceType, 120)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Filter_Remind
                     dv.DeviceType_Set(hs) = DT
                 Case Else 'parent
@@ -735,6 +835,8 @@ Public Class Thermostat
                                     Me.Mode = eMode.Heat
                                 Case "E", "EH"
                                     Me.Mode = eMode.Aux
+                                Case Else
+                                    Log("In ProcessCMD, Invalid Mode Value, Property= " & Prop & ", Value= " & Value, LogLevel.Err)
                             End Select
                         Case "F", "FM"
                             Select Case Value
@@ -742,6 +844,13 @@ Public Class Thermostat
                                     Me.Fan = eFan.Auto
                                 Case "1"
                                     Me.Fan = eFan.FanOn
+                            End Select
+                        Case "DS"
+                            Select Case Value
+                                Case "O"
+                                    Me.Damper = True
+                                Case "C"
+                                    Me.Damper = False
                             End Select
                         Case "FR"
                             'Remaining Filter Time

@@ -8,10 +8,10 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("HSPI_RCSSERIAL")> 
-<Assembly: AssemblyDescription("HS3 plugin for RCS Thermostat")> 
-<Assembly: AssemblyCompany("Homeseer Technologies")> 
-<Assembly: AssemblyProduct("RCS Serial Plugin")> 
+<Assembly: AssemblyTitle("HSPI_EVCSTAT")>
+<Assembly: AssemblyDescription("HS3 plugin for Honeywell Enviracom Thermostat")>
+<Assembly: AssemblyCompany("Homeseer Technologies")>
+<Assembly: AssemblyProduct("Honeywell Enviracom Thermostat Plugin")>
 <Assembly: AssemblyCopyright("Copyright ©  2013 Homeseer Technologies")> 
 <Assembly: AssemblyTrademark("")> 
 

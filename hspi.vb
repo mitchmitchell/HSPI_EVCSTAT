@@ -101,6 +101,10 @@ Public Class HSPI
                         oStat.Mode = CC.ControlValue
                     Case Thermostat.eDeviceTypes.Filter_Remind
                         oStat.FilterRemind = CC.ControlValue
+                    Case Thermostat.eDeviceTypes.RunTime
+                        oStat.TotalRunTime = CC.ControlValue
+                    Case Thermostat.eDeviceTypes.Damper_Status
+                        oStat.Damper = CC.ControlValue
                 End Select
                 oStat.UpdatePhysicalDevice(DeviceType, CC.ControlValue) 'do this here to prevent the physical device from getting caught in a loop updating itself.
             Next

@@ -10,3 +10,33 @@ C:\Users\Mitch.MAGNOLIAMANOR\source\repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTA
 C:\Users\Mitch.MAGNOLIAMANOR\source\repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.xml
 C:\Users\Mitch.MAGNOLIAMANOR\source\repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.pdb
 C:\Users\Mitch.MAGNOLIAMANOR\source\repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbprojResolveAssemblyReference.cache
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\HS3\HomeSeer\HomeSeer\HSPI_EVCSTAT.exe.config
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\HS3\HomeSeer\HomeSeer\HSPI_EVCSTAT.exe
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\HS3\HomeSeer\HomeSeer\HSPI_EVCSTAT.pdb
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\HS3\HomeSeer\HomeSeer\HSPI_EVCSTAT.xml
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.Resources.resources
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbproj.GenerateResource.cache
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbproj.CoreCompileInputs.cache
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbproj.CopyComplete
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.exe
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.xml
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.pdb
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\HSPI_EVCSTAT.exe.config
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\HSPI_EVCSTAT.exe
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\HSPI_EVCSTAT.pdb
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\HSPI_EVCSTAT.xml
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\HomeSeerAPI.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\HSCF.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\M2Mqtt.Net.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\Scheduler.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\ADODB.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\HSPI_EVCSTAT.exe.config
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\HSPI_EVCSTAT.exe
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\HSPI_EVCSTAT.pdb
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\HSPI_EVCSTAT.xml
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\HomeSeerAPI.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\HSCF.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\M2Mqtt.Net.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\Scheduler.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\ADODB.dll
+C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbprojAssemblyReference.cache

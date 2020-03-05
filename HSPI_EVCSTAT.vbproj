@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\HS3\HomeSeer\HomeSeer\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>HSPI_EVCSTAT.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
@@ -53,18 +53,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HomeSeerAPI">
-      <HintPath>..\..\HS3\HomeSeer\HomeSeer\HomeSeerAPI.dll</HintPath>
+      <HintPath>..\..\..\..\source\HS3\HomeSeer\HomeSeer\HomeSeerAPI.dll</HintPath>
     </Reference>
     <Reference Include="HSCF">
-      <HintPath>..\..\HS3\HomeSeer\HomeSeer\HSCF.dll</HintPath>
+      <HintPath>..\..\..\..\source\HS3\HomeSeer\HomeSeer\HSCF.dll</HintPath>
     </Reference>
-    <Reference Include="M2Mqtt.Net, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\HS3\HomeSeer\HomeSeer\M2Mqtt.Net.dll</HintPath>
+    <Reference Include="M2Mqtt.Net">
+      <HintPath>..\..\..\..\source\HS3\HomeSeer\HomeSeer\M2Mqtt.Net.dll</HintPath>
     </Reference>
-    <Reference Include="Scheduler, Version=3.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\hs3\HomeSeer\HomeSeer\Scheduler.dll</HintPath>
+    <Reference Include="Scheduler">
+      <HintPath>..\..\..\..\source\HS3\HomeSeer\HomeSeer\Scheduler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -122,7 +120,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -135,10 +135,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EVCSTATConfig.vb" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Installer\install.txt" />
-    <Content Include="Installer\help.htm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
