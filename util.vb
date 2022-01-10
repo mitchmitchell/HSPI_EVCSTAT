@@ -96,7 +96,7 @@ Public Module util
         Dim MQTT_SendTopic As String = "homeseer/evc/out"
         Dim MQTT_RecvTopic As String = "homeseer/evc/in"
         Dim Debug As Boolean = False
-        Dim BaudRate As Integer = 0
+        '        Dim BaudRate As Integer = 0
 
 
         parts = HttpUtility.ParseQueryString(data)
@@ -114,13 +114,13 @@ Public Module util
                 Case InStr(sKey, "TextBoxRecv") > 0
                     MQTT_RecvTopic = CStr(parts(sKey))
                 Case InStr(sKey, "DropDownList") > 0
-                    BaudRate = CInt(DDText("DropDownList", parts(sKey)))
+ '                   BaudRate = CInt(DDText("DropDownList", parts(sKey)))
                 Case InStr(sKey, "CheckBoxDebug") > 0
                     Debug = CheckBoxValue(parts(sKey))
             End Select
         Next
         hs.SaveINISetting("Settings", "PollInterval", Interval, INI_File)
-        hs.SaveINISetting("Settings", "BaudRate", BaudRate, INI_File)
+        '       hs.SaveINISetting("Settings", "BaudRate", BaudRate, INI_File)
         hs.SaveINISetting("Settings", "MQTTHost", MQTT_HostAddr, INI_File)
         hs.SaveINISetting("Settings", "MQTTSend", MQTT_SendTopic, INI_File)
         hs.SaveINISetting("Settings", "MQTTRecv", MQTT_RecvTopic, INI_File)
@@ -157,7 +157,8 @@ Public Module util
 
     Public Sub RegisterWebPage(ByVal link As String, Optional linktext As String = "", Optional page_title As String = "")
         Try
-            hs.RegisterPage(link, IFACE_NAME, "")
+            ' hs.RegisterPage(link, IFACE_NAME, "")
+            hs.RegisterPage(link, IFACE_NAME, Instance)
 
             If linktext = "" Then linktext = link
             linktext = linktext.Replace("_", " ")

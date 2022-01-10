@@ -112,7 +112,7 @@ Public Class EVCSTATConfig
     Protected Sub ButSave_Click(ByVal data As String)
         Dim sKey As String
         Dim parts As Collections.Specialized.NameValueCollection
-        Dim BaudRate As Integer
+        'Dim BaudRate As Integer
         parts = HttpUtility.ParseQueryString(data)
         Try
             'reset checkbox values first
@@ -131,11 +131,11 @@ Public Class EVCSTATConfig
                     Case InStr(sKey, "TextBoxHost") > 0
                         ComThread.SetMQTTHost(CStr(parts(sKey)))
                     Case InStr(sKey, "DropDownList") > 0
-                        BaudRate = CInt(DDText("DropDownList", parts(sKey)))
-                        If ComThread.BaudRate <> BaudRate Then
-                            ComThread.BaudRate = BaudRate
-                            ComThread.Restart()
-                        End If
+                        'BaudRate = CInt(DDText("DropDownList", parts(sKey)))
+                        'If ComThread.BaudRate <> BaudRate Then
+                        'ComThread.BaudRate = BaudRate
+                        'ComThread.Restart()
+                        'End If
 
                     Case InStr(sKey, "CheckBoxDebug") > 0
                         gDebug = CheckBoxValue(parts(sKey))
@@ -578,12 +578,12 @@ Public Class EVCSTATConfig
                     DataPairs(i).Name = EnumArray(i)
                     DataPairs(i).Value = i.ToString
                 Next
-                Select Case ComThread.BaudRate
-                    Case 9600
-                        Selected = 0
-                    Case 19200
-                        Selected = 1
-                End Select
+                '               Select Case ComThread.BaudRate
+                '           Case 9600
+                '               Selected = 0
+                '           Case 19200
+                '               Selected = 1
+                '       End Select
                 AddBlank = True
                 Msg = "Please Select"
             Case "ListBoxStats"

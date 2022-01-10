@@ -11,11 +11,11 @@ Public Class CommThread
     Public Shared TransmitQ As New Queue
     Dim RThread As Thread
     Public Port As String
-    Public BaudRate As Integer
+    '    Public BaudRate As Integer
     Public PollInterval As Integer
     Public MQTT_RecvTopic As String = "homeseer/evc/in"
     Public MQTT_SendTopic As String = "homeseer/evc/out"
-    Public MQTT_HostAddr As String = "127.0.0.1"
+    Public MQTT_HostAddr As String = Main.sIp
     Dim iRetries As Integer = 0
     Dim client As MqttClient
 
@@ -30,7 +30,8 @@ Public Class CommThread
     End Sub
 
 
-    Public Function Start(Optional ByVal sPort As String = "", Optional ByVal iBaudRate As Integer = -1) As Boolean
+    '    Public Function Start(Optional ByVal sPort As String = "", Optional ByVal iBaudRate As Integer = -1) As Boolean
+    Public Function Start(Optional ByVal sPort As String = "") As Boolean
 
         Try
             client = New MqttClient(MQTT_HostAddr)

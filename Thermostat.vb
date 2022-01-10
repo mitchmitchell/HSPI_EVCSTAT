@@ -36,6 +36,8 @@ Public Class Thermostat
         RunTime
         Filter_Remind
         Damper_Status
+        Calling_Status
+        Schedule
     End Enum
 
     Enum eDamper As Integer
@@ -190,12 +192,22 @@ Public Class Thermostat
             SetDeviceValue(eDeviceTypes.Hold, value)
         End Set
     End Property
+
     Public Property Damper() As Integer
         Get
             Return GetDeviceValue(eDeviceTypes.Damper_Status)
         End Get
         Set(ByVal value As Integer)
             SetDeviceValue(eDeviceTypes.Damper_Status, value)
+        End Set
+    End Property
+
+    Public Property Calling() As Integer
+        Get
+            Return GetDeviceValue(eDeviceTypes.Calling_Status)
+        End Get
+        Set(ByVal value As Integer)
+            SetDeviceValue(eDeviceTypes.Calling_Status, value)
         End Set
     End Property
 
@@ -398,9 +410,9 @@ Public Class Thermostat
             Case eDeviceTypes.Fan
                 Select Case Value
                     Case eFan.Auto
-                        Command = "F=0"
+                        Command = "F=A"
                     Case eFan.FanOn
-                        Command = "F=1"
+                        Command = "F=O"
                 End Select
             Case eDeviceTypes.Hold
                 Select Case Value
@@ -408,7 +420,7 @@ Public Class Thermostat
                         Command = "SC=0"
                     Case eHold.Hold
                         Command = "SC=1"
-                    Case eHold.Tmp ' dont really ever send this command out.
+                    Case eHold.Tmp ' I think this should always be sent with SPH or SPC
                         Command = "SC=2"
                 End Select
             Case eDeviceTypes.Mode
@@ -524,6 +536,14 @@ Public Class Thermostat
                 Pair.RangeStatusSuffix = " Days"
                 Pair.Render = Enums.CAPIControlType.ValuesRange
             Case eDeviceTypes.Damper_Status
+                Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Status)
+                Pair.PairType = VSVGPairType.SingleValue
+                Pair.Value = value1
+                Pair.Status = name
+                Pair.Render_Location.Row = 1
+                Pair.Render_Location.Column = 1
+                Pair.Render = Enums.CAPIControlType.Values
+            Case eDeviceTypes.Calling_Status
                 Pair = New VSPair(HomeSeerAPI.ePairStatusControl.Status)
                 Pair.PairType = VSVGPairType.SingleValue
                 Pair.Value = value1
@@ -757,6 +777,15 @@ Public Class Thermostat
                     AddControl(ref, "Reset", ChildDeviceType, 120)
                     DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Filter_Remind
                     dv.DeviceType_Set(hs) = DT
+                Case eDeviceTypes.Calling_Status
+                    dv.ImageLarge(hs) = "images/evcstat/thermostat-sub.png"
+                    dv.Image(hs) = "images/evcstat/thermostat-sub_small.png"
+                    SetUpStatusOnly(dv)
+                    AddControl(ref, "Idle", ChildDeviceType, False)
+                    AddControl(ref, "Calling", ChildDeviceType, True)
+                    DT.Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Filter_Remind + 1
+                    dv.DeviceType_Set(hs) = DT
+                Case eDeviceTypes.Schedule
                 Case Else 'parent
                     dv.ImageLarge(hs) = "images/evcstat/thermostat-main.png"
                     dv.Image(hs) = "images/evcstat/thermostat-main_small.png"
@@ -840,10 +869,12 @@ Public Class Thermostat
                             End Select
                         Case "F", "FM"
                             Select Case Value
-                                Case "0"
+                                Case "A"
                                     Me.Fan = eFan.Auto
-                                Case "1"
+                                Case "O"
                                     Me.Fan = eFan.FanOn
+                                Case Else
+                                    Log("In ProcessCMD, Invalid Fan Value, Property= " & Prop & ", Value= " & Value, LogLevel.Err)
                             End Select
                         Case "DS"
                             Select Case Value
@@ -851,6 +882,17 @@ Public Class Thermostat
                                     Me.Damper = True
                                 Case "C"
                                     Me.Damper = False
+                                Case Else
+                                    Log("In ProcessCMD, Invalid Damper Value, Property= " & Prop & ", Value= " & Value, LogLevel.Err)
+                            End Select
+                        Case "CS"
+                            Select Case Value
+                                Case "C"
+                                    Me.Calling = True
+                                Case "I"
+                                    Me.Calling = False
+                                Case Else
+                                    Log("In ProcessCMD, Invalid Calling Value, Property= " & Prop & ", Value= " & Value, LogLevel.Err)
                             End Select
                         Case "FR"
                             'Remaining Filter Time
@@ -878,6 +920,8 @@ Public Class Thermostat
                                     Me.Hold = eHold.Hold
                                 Case "2"
                                     Me.Hold = eHold.Tmp
+                                Case Else
+                                    Log("In ProcessCMD, Invalid Hold Value, Property= " & Prop & ", Value= " & Value, LogLevel.Err)
                             End Select
                         Case Else
                             CheckTriggers(addr, zone, Prop, Value)

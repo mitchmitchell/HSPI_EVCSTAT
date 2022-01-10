@@ -1,0 +1,64 @@
+Ok, so here's what I've figured out by trial and error, by looking at the sample plugin, and by exchanging PM's with Rich:
+
+1. Create devices to track the following. Each must be set to use the Thermostat API and have Value Status Pairs defined with the specified values. In order to control via third-party integration (IFTTT, Echo, etc.), each VSPair entry must also have the correct ControlUse enum set.
+Thermostat Device (the root device that owns all the others)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Root
+Operating Mode (what the system is set to do)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Operating_Mode
+
+Status Values:
+0 = Off (VSPair ControlUse = _ThermOff)
+1 = Heat (VSPair ControlUse = _ThermHeat)
+2 = Cool (VSPair ControlUse = _ThermCool)
+3 = Auto (VSPair ControlUse = _ThermAuto)
+Operating Status (what the system is doing right now)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Operating_Status
+
+Status Values:
+0 = Idle
+1 = Heating
+2 = Cooling
+Fan Mode (what the fan is set to do)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Fan_Mode
+
+Status Values:
+0 = Auto (VSPair ControlUse = _FanAuto)
+1 = On (VSPair ControlUse = _FanOn)
+Fan Status (whether the fan is running right now)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Fan_Status
+
+Status Values:
+0 = Auto (should really be "Off" instead, as the status is a binary representation)
+1 = On
+Hold Mode (TBD - No examples or documentation exist for this)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Hold_Mode
+Heat Setpoint (the temperature to work towards if operating mode is heat or if auto and the temperature goes below this point)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Setpoint
+Device_SubType = DeviceTypeInfo.eDeviceSubType_Setpoint.Heating_1 (don't ask me why this is "_1"...)
+Cool Setpoint (the temperature to work towards if operating mode is cool or if auto and the temperature goes above this point)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Setpoint
+Device_SubType = DeviceTypeInfo.eDeviceSubType_Setpoint.Cooling_1 (don't ask me why this is "_1"...)
+
+(Note: There is also a setpoint sub type for "Auto_Changeover", but no examples or documentation exist so its purpose is unknown at this time.)
+Temperature (the current temperature as reported at the thermostat)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Temperature
+Device_SubType = DeviceTypeInfo.eDeviceSubType_Setpoint.Temperature
+(Note: there is also a Temperature_1, which the sample plugin uses, but this "cleaner" sub type value works in my experience. There is also an "Other_Temperature" sub type that I chose to use for Outdoor temp, and two "Unused" enums.)
+Humidity (the current humidity as reported at the thermostat)
+Device_API = DeviceTypeInfo.eDeviceAPI.Thermostat
+Device_Type = DeviceTypeInfo.eDeviceType_Thermostat.Temperature
+Device_SubType = DeviceTypeInfo.eDeviceSubType_Setpoint.Humidity
+
+
+2. The default behavior of the HSTouch command is to cycle through the modes HS assumes all thermostats have: Off > Heat > Cool > Auto > Off, etc. even if your thermostat doesn't have an "Auto" mode.
+
+Hopefully this will help anyone else also trying to figure out how to contort their plugin to fit. And as I've learned this weekend, you're much better off doing this up front, as I now have to change the enums my devices are using in order to satisfy HSTouch, which will break any existing events (worse, it will make them inaccurate!) when users upgrade.

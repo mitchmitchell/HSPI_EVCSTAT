@@ -40,3 +40,24 @@ C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\
 C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\Scheduler.dll
 C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\bin\Debug\ADODB.dll
 C:\Users\Mitch.MAGNOLIAMANOR\Documents\Visual Studio 2017\Projects\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbprojAssemblyReference.cache
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbproj.SuggestedBindingRedirects.cache
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.exe.config
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.Resources.resources
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbproj.GenerateResource.cache
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbproj.CoreCompileInputs.cache
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\HSPI_EVCSTAT.exe.config
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\HSPI_EVCSTAT.exe
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\HSPI_EVCSTAT.pdb
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\HSPI_EVCSTAT.xml
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\HomeSeerAPI.dll
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\HSCF.dll
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\M2Mqtt.Net.dll
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\Newtonsoft.Json.dll
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\Scheduler.dll
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\M2Mqtt.Net.pdb
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\bin\Debug\Newtonsoft.Json.xml
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbproj.CopyComplete
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.exe
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.xml
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.pdb
+C:\Users\mitch\Source\Repos\HSPI_EVCSTAT\obj\x86\Debug\HSPI_EVCSTAT.vbproj.AssemblyReference.cache

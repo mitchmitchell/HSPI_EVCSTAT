@@ -618,7 +618,7 @@ Public Class HSPI
     Public Function InitIO(ByVal port As String) As String
         Dim dv As New Scheduler.Classes.DeviceClass
         Dim Response As String
-        Dim BaudRate As String = "9600"
+        '        Dim BaudRate As String = "9600"
         Dim Interval As String = "0"
         Dim RefIDs() As String
         Dim RefID As String
@@ -632,7 +632,11 @@ Public Class HSPI
 
         TempScaleF = CBool(hs.GetINISetting("Settings", "GlobalTempScaleF", "True").Trim) 'get temp scale from HS
         Tempscale = IIf(TempScaleF, Thermostat.eTempScale.Fahrenheit, Thermostat.eTempScale.Celsius) 'set the global variable
-
+        If Instance <> "" Then
+            INI_File = Replace(IFACE_NAME, " ", "") & "_" & Replace(Instance, " ", "") & ".ini"
+        Else
+            INI_File = Replace(IFACE_NAME, " ", "") & ".ini"
+        End If
         Response = hs.GetINISetting("Settings", "RefIDs", "", INI_File) 'this is a list of all the parent RefID's
         If Response.Length > 0 Then
             RefIDs = Response.Split("|")
@@ -648,7 +652,7 @@ Public Class HSPI
                 End If
             Next
         Else
-            Log("No thermostat devices were found in the Plug-in INI file.", LogLevel.Err)
+            Log("No thermostat devices were found in the Plug-in INI file: " + INI_File + ".", LogLevel.Err)
             Console.WriteLine("No thermostat devices were found in the Plug-in INI file.")
         End If
 
@@ -658,10 +662,10 @@ Public Class HSPI
         callback.RegisterEventCB(Enums.HSEvent.CONFIG_CHANGE, Me.Name, Me.InstanceFriendlyName)
         callback.RegisterEventCB(Enums.HSEvent.SETUP_CHANGE, Me.Name, Me.InstanceFriendlyName)
 
-        BaudRate = hs.GetINISetting("Settings", "BaudRate", "9600", INI_File)
+        '        BaudRate = hs.GetINISetting("Settings", "BaudRate", "9600", INI_File)
         gDebug = hs.GetINISetting("Settings", "Debug", False, INI_File)
         Interval = hs.GetINISetting("Settings", "PollInterval", "0", INI_File)
-        MQTT_HostAddr = hs.GetINISetting("Settings", "MQTTHost", "127.0.0.1", INI_File)
+        MQTT_HostAddr = hs.GetINISetting("Settings", "MQTTHost", Main.sIp, INI_File)
         MQTT_SendTopic = hs.GetINISetting("Settings", "MQTTSend", "homeseer/evc/out", INI_File)
         MQTT_RecvTopic = hs.GetINISetting("Settings", "MQTTRecv", "homeseer/evc/in", INI_File)
 
@@ -669,7 +673,8 @@ Public Class HSPI
         ComThread.SetSendTopic(MQTT_SendTopic)
         ComThread.SetRecvTopic(MQTT_RecvTopic)
 
-        ComThread.Start(port, CInt(BaudRate))
+        '        ComThread.Start(port, CInt(BaudRate))
+        ComThread.Start(port)
         ComThread.SetPolling(CInt(Interval))
         Console.WriteLine("InitIO completeing.")
         Return Nothing

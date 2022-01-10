@@ -133,7 +133,7 @@ Public Class PluginAPI
     End Sub
 
     Public Function PollDevice(ByVal dvref As Integer) As IPlugInAPI.PollResultInfo Implements HomeSeerAPI.IPlugInAPI.PollDevice
-
+        'Not used in HS3 and onward
     End Function
 
     ' HS2 compatible web page access

@@ -13,8 +13,8 @@ Module Main
     Private host As HomeSeerAPI.IHSApplication
     Private gAppAPI As PluginAPI
     Public plugin As New HSPI                               ' real plugin functions, user supplied
-
-    Public ThermostatPlugin As Thermostat
+    Public sIp As String = "127.0.0.1"
+    '    Public ThermostatPlugin As Thermostat
 
     Friend colTrigs_Sync As System.Collections.SortedList
     Friend colTrigs As System.Collections.SortedList
@@ -24,7 +24,6 @@ Module Main
 
 
     Sub Main()
-        Dim sIp As String = "127.0.0.1"
         Dim argv As System.Collections.ObjectModel.ReadOnlyCollection(Of String)
         argv = My.Application.CommandLineArgs
 
@@ -37,16 +36,16 @@ Module Main
                 Case "server" : sIp = parts(1)
                 Case "instance"
                     Try
-                        instance = parts(1)
+                        Instance = parts(1)
                     Catch ex As Exception
-                        instance = ""
+                        Instance = ""
                     End Try
             End Select
         Next
 
         gAppAPI = New PluginAPI
 
-        Console.WriteLine("Connecting to server at " & sIp & "...")
+        Console.WriteLine("Connecting to server at " & sIp & " instance " & Instance & "...")
         client = ScsServiceClientBuilder.CreateClient(Of IHSApplication)(New ScsTcpEndPoint(sIp, 10400), gAppAPI)
         clientCallback = ScsServiceClientBuilder.CreateClient(Of IAppCallbackAPI)(New ScsTcpEndPoint(sIp, 10400), gAppAPI)
 
@@ -83,7 +82,8 @@ TryAgain:
 
         Try
             ' connect to HS so it can register a callback to us
-            host.Connect(IFACE_NAME, "")
+            ' host.Connect(IFACE_NAME, "")
+            host.Connect(IFACE_NAME, Instance)
 
             ' create the user object that is the real plugin, accessed from the pluginAPI wrapper
             callback = callback
